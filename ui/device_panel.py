@@ -28,7 +28,7 @@ class DevicePanel(ctk.CTkFrame):
         self.temp_entry = ctk.CTkEntry(
             self.temp_frame,
             placeholder_text="Temperature Setpoint",
-            width=120
+            width=60
         )
         self.temp_entry.pack(side="left", padx=5)
 
@@ -78,13 +78,15 @@ class DevicePanel(ctk.CTkFrame):
         )
         self.pump1_set.pack(side="left", padx=5)
 
+        # pump 1 state indication
+        
         self.pump1_on = False
         
-        # this needs to be fixed so that it shows on or off depending on if you're clicking the button
         self.pump1_state = ctk.CTkLabel(
             self.pump1_frame,
             text="OFF"
-        )
+                )
+
         self.pump1_state.pack(side="left", padx=10)
 
 
@@ -98,7 +100,7 @@ class DevicePanel(ctk.CTkFrame):
         self.pump2_btn = ctk.CTkButton(
             self.pump2_frame,
             text="Toggle Pump 2",
-            command=self.toggle_pump1,
+            command=self.toggle_pump2,
             width=120
         )
         self.pump2_btn.pack(side="left", padx=5)
@@ -140,7 +142,7 @@ class DevicePanel(ctk.CTkFrame):
         self.pump3_btn = ctk.CTkButton(
             self.pump3_frame,
             text="Toggle Pump 3",
-            command=self.toggle_pump1,
+            command=self.toggle_pump3,
             width=120
         )
         self.pump3_btn.pack(side="left", padx=5)
@@ -171,7 +173,7 @@ class DevicePanel(ctk.CTkFrame):
         )
         self.pump3_state.pack(side="left", padx=10)
 
-
+    #  ================================================================================= #
 
 
     # UI ACTIONS (connect this to the arduino code)
@@ -193,7 +195,14 @@ class DevicePanel(ctk.CTkFrame):
     def toggle_pump1(self):
         self.pump1_on = not self.pump1_on
         self.device.send(f"P1,{int(self.pump1_on)}")
+        if (self.pump1_on == 0):
+            
+                self.pump1_state.configure(text = "OFF")
+                
+        else:
+                self.pump1_state.configure(text = "ON")
 
+                
     # PUMP 2
     def set_pump2_flow(self):
         try:
@@ -205,7 +214,13 @@ class DevicePanel(ctk.CTkFrame):
     def toggle_pump2(self):
         self.pump2_on = not self.pump2_on
         self.device.send(f"P2,{int(self.pump2_on)}")
-
+        if (self.pump2_on == 0):
+            
+                self.pump2_state.configure(text = "OFF")
+                
+        else:
+                self.pump2_state.configure(text = "ON")
+                
     # PUMP 3
     def set_pump3_flow(self):
         try:
@@ -217,6 +232,13 @@ class DevicePanel(ctk.CTkFrame):
     def toggle_pump3(self):
         self.pump3_on = not self.pump3_on
         self.device.send(f"P3,{int(self.pump3_on)}")
+        
+        if (self.pump3_on == 0):
+            
+                self.pump3_state.configure(text = "OFF")
+                
+        else:
+                self.pump3_state.configure(text = "ON")
 
     # LIVE UPDATES FOR TEMPERATURE
     def update_temp(self, value):
