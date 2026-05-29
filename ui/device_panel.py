@@ -23,27 +23,48 @@ class DevicePanel(ctk.CTkFrame):
         # HEATER SETPOINT
         # ===============
         self.temp_frame = ctk.CTkFrame(self)
-        self.temp_frame.pack(pady=5)
+        self.temp_frame.pack(pady=5, fill="x")
+
 
         self.temp_entry = ctk.CTkEntry(
             self.temp_frame,
-            placeholder_text="Temperature Setpoint",
-            width=60
+            placeholder_text="Temp",
+            width=80
         )
         self.temp_entry.pack(side="left", padx=5)
-
-        # default temperature
-        self.temp_entry.insert(0, "37")
-
-        # send initial temperature
-        self.device.send("T,37")
-
+        
         self.temp_button = ctk.CTkButton(
-            self.temp_frame,
-            text="Set Temperature",
-            command=self.set_temp
+            self.temp_frame, 
+            text="Set",
+            command=self.set_temp,
+            width=60
         )
         self.temp_button.pack(side="left", padx=5)
+
+
+        # heater on/off button
+        self.temp_btn = ctk.CTkButton(
+                    self.temp_frame,
+                    text="Toggle Heater",
+                    command=self.toggle_temp,
+                    width=120
+        ) 
+        self.temp_btn.pack(side="left", padx=5)
+
+        # heater state indication
+        self.temp_on = False
+        
+        self.temp_state = ctk.CTkLabel(
+            self.temp_frame,
+            text="OFF"
+                )
+        self.temp_state.pack(side="left", padx=10)
+
+        # default temperature
+        #self.temp_entry.insert(0, "0") # set to 0, should turn this on when out of incubator
+
+        # send initial temperature
+        self.device.send("T,0")
 
 
         # ===========
@@ -51,15 +72,6 @@ class DevicePanel(ctk.CTkFrame):
         # ===========
         self.pump1_frame = ctk.CTkFrame(self)
         self.pump1_frame.pack(pady=5, fill="x")
-
-        # toggle pump on / off button
-        self.pump1_btn = ctk.CTkButton(
-            self.pump1_frame,
-            text="Toggle Pump 1",
-            command=self.toggle_pump1,
-            width=120
-        )
-        self.pump1_btn.pack(side="left", padx=5)
 
         # entry box for pump flow setpoint
         self.pump1_flow = ctk.CTkEntry(
@@ -77,6 +89,16 @@ class DevicePanel(ctk.CTkFrame):
             width=60
         )
         self.pump1_set.pack(side="left", padx=5)
+
+
+        # toggle pump on / off button
+        self.pump1_btn = ctk.CTkButton(
+            self.pump1_frame,
+            text="Toggle Pump 1",
+            command=self.toggle_pump1,
+            width=120
+        )
+        self.pump1_btn.pack(side="left", padx=5)
 
         # pump 1 state indication
         
@@ -96,15 +118,6 @@ class DevicePanel(ctk.CTkFrame):
         self.pump2_frame = ctk.CTkFrame(self)
         self.pump2_frame.pack(pady=5, fill="x")
 
-        # toggle pump on / off button
-        self.pump2_btn = ctk.CTkButton(
-            self.pump2_frame,
-            text="Toggle Pump 2",
-            command=self.toggle_pump2,
-            width=120
-        )
-        self.pump2_btn.pack(side="left", padx=5)
-
         # entry box for pump flow setpoint
         self.pump2_flow = ctk.CTkEntry(
             self.pump2_frame,
@@ -122,8 +135,16 @@ class DevicePanel(ctk.CTkFrame):
         )
         self.pump2_set.pack(side="left", padx=5)
 
+        # toggle pump on / off button
+        self.pump2_btn = ctk.CTkButton(
+            self.pump2_frame,
+            text="Toggle Pump 2",
+            command=self.toggle_pump2,
+            width=120
+        )
+        self.pump2_btn.pack(side="left", padx=5)
+
         self.pump2_on = False
-       
         # this needs to be fixed so that it shows on or off depending on if you're clicking the button
         self.pump2_state = ctk.CTkLabel(
             self.pump2_frame,
@@ -137,16 +158,7 @@ class DevicePanel(ctk.CTkFrame):
         # ===========
         self.pump3_frame = ctk.CTkFrame(self)
         self.pump3_frame.pack(pady=5, fill="x")
-        
-        # toggle pump on / off button
-        self.pump3_btn = ctk.CTkButton(
-            self.pump3_frame,
-            text="Toggle Pump 3",
-            command=self.toggle_pump3,
-            width=120
-        )
-        self.pump3_btn.pack(side="left", padx=5)
-        
+
         # entry box for pump flow setpoint
         self.pump3_flow = ctk.CTkEntry(
             self.pump3_frame,
@@ -163,6 +175,16 @@ class DevicePanel(ctk.CTkFrame):
             width=60
         )
         self.pump3_set.pack(side="left", padx=5)
+
+
+        # toggle pump on / off button
+        self.pump3_btn = ctk.CTkButton(
+            self.pump3_frame,
+            text="Toggle Pump 3",
+            command=self.toggle_pump3,
+            width=120
+        )
+        self.pump3_btn.pack(side="left", padx=5)
 
         self.pump3_on = False
 
@@ -183,6 +205,17 @@ class DevicePanel(ctk.CTkFrame):
             self.device.send(f"T,{val}")
         except ValueError:
             print("Invalid temperature")
+
+    def toggle_temp(self):
+        self.temp_on = not self.temp_on
+        self.device.send(f"T,{int(self.temp_on)}")
+        if (self.temp_on == 0):
+            
+                self.temp_state.configure(text = "OFF")
+                
+        else:
+                self.temp_state.configure(text = "ON")
+
 
     # PUMP 1
     def set_pump1_flow(self):
